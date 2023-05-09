@@ -28,6 +28,7 @@ import masecla.reddit4j.requests.SubredditPostListingEndpointRequest;
 import org.jsoup.Connection;
 import org.jsoup.Connection.Method;
 import org.jsoup.Connection.Response;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 
 import com.google.gson.Gson;
@@ -43,6 +44,9 @@ import masecla.reddit4j.objects.subreddit.RedditSubreddit;
 import masecla.reddit4j.requests.RedditUserListingEndpointRequest;
 import masecla.reddit4j.requests.RedditPreferencesUpdateRequest;
 
+/**
+ * A connection to Reddit.
+ */
 public class Reddit4J {
 
     private static String BASE_URL = "https://www.reddit.com";
@@ -189,7 +193,17 @@ public class Reddit4J {
         return new RedditUserListingEndpointRequest("/prefs/trusted", this);
     }
 
-    public RedditSubreddit getSubreddit(String name) throws IOException, InterruptedException {
+    /**
+     * Gets the specified subreddit.
+     * @param name the name of the subreddit (e.g., "ProgrammerHumor")
+     * @return a subreddit
+     * @throws org.jsoup.HttpStatusException if the operation could not be
+     *  completed, such as if the subreddit does not exist or the user
+     *  does not have permission to access it
+     * @throws IOException if communication failed with the server
+     * @throws InterruptedException if the connection is interrupted
+     */
+    public RedditSubreddit getSubreddit(String name) throws IOException, InterruptedException, HttpStatusException {
         if (name.startsWith("r/"))
             name = name.substring(2);
         if (name.startsWith("/"))
@@ -206,6 +220,11 @@ public class Reddit4J {
         return result;
     }
 
+    /**
+     * Gets this user's friends.
+     *
+     * @return
+     */
     public RedditUserListingEndpointRequest getFriends() {
         return new RedditUserListingEndpointRequest("/prefs/friends", this) {
             @Override
